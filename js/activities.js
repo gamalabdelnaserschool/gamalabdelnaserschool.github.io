@@ -51,6 +51,6 @@ async function getActivities() {
       (a.details ? `<div class="card" style="margin-top:1.2rem"><p>${esc(a.details).replace(/\n/g, '<br>')}</p></div>`
                  : '<p class="todo" style="margin-top:1.2rem">سيُضاف هنا تفاصيل النشاط (المشرفون والمواعيد والفعاليات) بعد جمع البيانات.</p>') +
       galleryHtml(a) +
-      '<div class="btns" style="margin-top:1.5rem"><a class="btn gold" href="/activities">كل الأنشطة</a></div>';
+      `<div class="btns" style="margin-top:1.5rem"><a class="btn gold" href="/activities">كل الأنشطة</a><a class="btn" style="color:var(--navy)" href="/achievements?activity=${encodeURIComponent(a.id)}">إنجازات النشاط</a></div>`;
   }
 })();
