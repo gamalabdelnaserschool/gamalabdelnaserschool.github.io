@@ -1,4 +1,15 @@
 // Shared: mobile menu + latest news from Firestore ("news" collection)
+// Reading progress indicator for the sticky header
+function updateScrollProgress() {
+  const root = document.documentElement;
+  const scrollable = root.scrollHeight - root.clientHeight;
+  const progress = scrollable > 0 ? (root.scrollTop / scrollable) * 100 : 0;
+  root.style.setProperty('--scroll-progress', progress + '%');
+}
+window.addEventListener('scroll', updateScrollProgress, {passive:true});
+window.addEventListener('resize', updateScrollProgress);
+updateScrollProgress();
+
 document.querySelector('.menu-btn')?.addEventListener('click', e => {
   const open = document.body.classList.toggle('nav-open');
   e.currentTarget.setAttribute('aria-expanded', open);
