@@ -97,6 +97,20 @@
   </section>
 </main>
 
+
+<div class="news-modal" id="news-modal" aria-hidden="true">
+  <div class="news-modal__backdrop" data-close-news></div>
+  <section class="news-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="news-modal-title">
+    <button class="news-modal__close" type="button" aria-label="إغلاق" data-close-news>×</button>
+    <div id="news-modal-image" class="news-modal__image" hidden></div>
+    <span id="news-modal-category" class="news-modal__category">أخبار المدرسة</span>
+    <time id="news-modal-date"></time>
+    <h3 id="news-modal-title"></h3>
+    <p id="news-modal-summary" class="news-modal__summary"></p>
+    <div id="news-modal-details" class="news-modal__details"></div>
+  </section>
+</div>
+
 <footer class="site-footer">
   <div class="wrap foot-grid">
     <div class="foot-brand"><img src="/assets/logo.png" alt=""><div><strong>مدرسة جمال عبد الناصر العسكرية الثانوية بنين</strong><span>الإسكندرية، مصر</span></div></div>
