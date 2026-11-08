@@ -5,7 +5,7 @@ service cloud.firestore {
     // غيّر البريد التالي إلى بريد حساب الإدارة الذي أنشأته في Authentication
     match /{col}/{doc} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.email == "ADMIN_EMAIL_HERE";
+      allow write: if request.auth != null && request.auth.token.email == "opaidamazed@gmail.com";
     }
   }
 }
