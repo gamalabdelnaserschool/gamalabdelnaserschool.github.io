@@ -7,7 +7,7 @@
 <title>لوحة التحكم — الثانوية العسكرية بنين</title>
 <link rel="icon" href="assets/logo.png">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5">
+<link rel="stylesheet" href="css/style.css?v=6">
 <style>
 .panel{background:var(--white);border:1px solid var(--line);border-top:4px solid var(--gold);padding:1.5rem;margin-block:2rem}
 .panel h2{font-size:1.4rem}
@@ -47,6 +47,15 @@ button.btn{cursor:pointer;font:inherit;font-weight:600}
         <option value="achievements">الإنجازات</option>
         <option value="competitions">المسابقات</option>
       </select>
+      <div id="actWrap" class="hidden"><label for="act">النشاط</label>
+        <select id="act">
+          <option value="radio">الإذاعة والصحافة المدرسية</option>
+          <option value="library">النشاط المكتبي وعلوم اللغة</option>
+          <option value="industrial">النشاط الصناعي والحرفي</option>
+          <option value="art">النشاط الفني الإبداعي</option>
+          <option value="sports">النشاط الرياضي</option>
+          <option value="military">النشاط العسكري القيادي</option>
+        </select></div>
       <label for="title">العنوان</label><input id="title">
       <label for="summary">ملخص قصير</label><input id="summary">
       <label for="details">التفاصيل</label><textarea id="details"></textarea>
@@ -87,10 +96,10 @@ $('saveBtn').onclick = async () => {
   const title = $('title').value.trim();
   if (!title) return say('saveMsg', 'اكتب العنوان أولًا.');
   try {
-    await db.collection($('col').value).add({
-      title, summary: $('summary').value.trim(), details: $('details').value.trim(),
-      image: $('image').value.trim(), date: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    const doc = {title, summary: $('summary').value.trim(), details: $('details').value.trim(),
+      image: $('image').value.trim(), date: firebase.firestore.FieldValue.serverTimestamp()};
+    if ($('col').value === 'achievements') doc.activity = $('act').value;
+    await db.collection($('col').value).add(doc);
     ['title','summary','details','image'].forEach(i => $(i).value = '');
     say('saveMsg', 'تم النشر.', true); loadItems();
   } catch (e) { console.error(e); say('saveMsg', 'تعذر النشر. تأكد أن حسابك مسموح له بالكتابة في قواعد Firestore.'); }
@@ -105,7 +114,7 @@ async function loadItems() {
       <button class="btn line" style="color:#a02020;border-color:#a02020;background:none" data-id="${d.id}">حذف</button></div>`).join('');
   } catch (e) { console.error(e); $('items').innerHTML = '<p>تعذر تحميل المحتوى.</p>'; }
 }
-$('col').onchange = loadItems;
+$('col').onchange = () => { $('actWrap').classList.toggle('hidden', $('col').value !== 'achievements'); loadItems(); };
 $('items').onclick = async e => {
   const id = e.target.dataset.id;
   if (id && confirm('حذف هذا العنصر نهائيًا؟')) { await db.collection($('col').value).doc(id).delete(); loadItems(); }
