@@ -1,5 +1,5 @@
 // Activities: built-in defaults + optional overrides/additions from Firestore ("activities" collection)
-const PLACEHOLDER = '/assets/activities/placeholder.jpg';
+const PLACEHOLDER = '/assets/activities/placeholder.svg';
 const DEFAULT_ACTIVITIES = [
   {id:'radio', title:'الإذاعة والصحافة المدرسية', summary:'إعداد وتقديم الإذاعة المدرسية وإصدار الصحافة المدرسية.'},
   {id:'library', title:'النشاط المكتبي وعلوم اللغة', summary:'القراءة والمكتبة وأنشطة اللغة العربية واللغات.'},
