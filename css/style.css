@@ -77,3 +77,16 @@ footer{background:#06103a;color:#aab8ea;padding:2rem 0;text-align:center;font-si
 .principal .avatar{flex:none;width:76px;height:76px;border-radius:50%;background:var(--navy);border:3px solid var(--gold);display:grid;place-items:center}
 .principal .avatar img{width:52px;height:52px}
 @media(max-width:820px){.facts{grid-template-columns:repeat(2,1fr)}.split{grid-template-columns:1fr}.facility-list{grid-template-columns:1fr 1fr}}
+
+/* ---- activities ---- */
+.act-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem}
+.act-card{background:var(--white);border:1px solid var(--line);border-top:4px solid var(--gold);display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
+.act-card:hover{transform:translateY(-4px);border-top-color:var(--blue)}
+.act-card img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--line)}
+.act-card div{padding:1rem 1.2rem 1.2rem}
+.act-card h3{font-size:1.15rem;color:var(--navy)}
+.act-card p{font-size:.95rem;color:#4a5780;margin:.3rem 0 .6rem}
+.act-card .more{color:var(--blue);font-weight:600;border-bottom:2px solid var(--gold)}
+.act-cover img{width:100%;max-height:440px;object-fit:cover;border-bottom:4px solid var(--gold)}
+@media(max-width:820px){.act-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.act-grid{grid-template-columns:1fr}}
