@@ -5,120 +5,69 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>لوحة التحكم — الثانوية العسكرية بنين</title>
-<link rel="icon" href="assets/logo.png">
+<link rel="icon" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=6">
-<style>
-.panel{background:var(--white);border:1px solid var(--line);border-top:4px solid var(--gold);padding:1.5rem;margin-block:2rem}
-.panel h2{font-size:1.4rem}
-label{display:block;font-weight:600;margin:.8rem 0 .2rem}
-input,select,textarea{width:100%;font:inherit;padding:.55rem .7rem;border:1px solid var(--line);border-radius:4px;background:var(--mist)}
-textarea{min-height:110px}
-.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-top:1rem}
-button.btn{cursor:pointer;font:inherit;font-weight:600}
-.item{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
-.item small{color:#5b6890}
-.msg{margin-top:.8rem;color:#a02020}.ok{color:#1f7a3f}
-.hidden{display:none}
-</style>
+<link rel="stylesheet" href="/css/admin.css?v=1">
 </head>
 <body>
-<header><div class="wrap">
-  <a class="brand" href="/"><img src="assets/logo.png" alt=""><span>لوحة التحكم</span></a>
-  <button id="logout" class="btn line hidden" style="color:var(--gold-2);background:none;cursor:pointer">تسجيل الخروج</button>
-</div></header>
+<a class="skip" href="#main">تخطي إلى المحتوى</a>
 
-<main class="wrap">
-  <section id="login" class="panel">
-    <h2>تسجيل دخول الإدارة</h2>
-    <label for="email">البريد الإلكتروني</label><input id="email" type="email" autocomplete="username">
-    <label for="pass">كلمة المرور</label><input id="pass" type="password" autocomplete="current-password">
-    <div class="row"><button id="loginBtn" class="btn gold">دخول</button></div>
-    <p id="loginMsg" class="msg"></p>
-  </section>
+<section id="login" class="login" aria-labelledby="login-h">
+  <div class="login-art" aria-hidden="true"><img src="/assets/logo.png" alt=""><p>الثانوية العسكرية بنين</p></div>
+  <form id="login-form" class="login-card" novalidate>
+    <h1 id="login-h">تسجيل دخول الإدارة</h1>
+    <p class="muted">أدخل بيانات حسابك للوصول إلى لوحة التحكم.</p>
+    <div class="field"><label for="email">البريد الإلكتروني</label><input id="email" type="email" dir="ltr" autocomplete="username" required></div>
+    <div class="field"><label for="pass">كلمة المرور</label>
+      <div class="pw"><input id="pass" type="password" dir="ltr" autocomplete="current-password" required><button type="button" id="pw-toggle" class="btn ghost" aria-pressed="false">إظهار</button></div></div>
+    <p id="login-msg" class="msg" role="alert"></p>
+    <div class="row"><button class="btn primary" type="submit">دخول</button><button type="button" id="reset" class="btn ghost">نسيت كلمة المرور؟</button></div>
+  </form>
+</section>
 
-  <div id="app" class="hidden">
-    <section class="panel">
-      <h2>إضافة محتوى جديد</h2>
-      <label for="col">القسم</label>
-      <select id="col">
-        <option value="news">الأخبار</option>
-        <option value="activities">الأنشطة</option>
-        <option value="achievements">الإنجازات</option>
-        <option value="competitions">المسابقات</option>
-      </select>
-      <div id="actWrap" class="hidden"><label for="act">النشاط</label>
-        <select id="act">
-          <option value="radio">الإذاعة والصحافة المدرسية</option>
-          <option value="library">النشاط المكتبي وعلوم اللغة</option>
-          <option value="industrial">النشاط الصناعي والحرفي</option>
-          <option value="art">النشاط الفني الإبداعي</option>
-          <option value="sports">النشاط الرياضي</option>
-          <option value="military">النشاط العسكري القيادي</option>
-        </select></div>
-      <label for="title">العنوان</label><input id="title">
-      <label for="summary">ملخص قصير</label><input id="summary">
-      <label for="details">التفاصيل</label><textarea id="details"></textarea>
-      <label for="image">رابط الصورة (اختياري)</label><input id="image" type="url" dir="ltr" placeholder="https://">
-      <div class="row"><button id="saveBtn" class="btn gold">نشر</button></div>
-      <p id="saveMsg" class="msg"></p>
-    </section>
-    <section class="panel">
-      <h2>المحتوى المنشور</h2>
-      <div id="items"></div>
-    </section>
+<div id="app" hidden>
+  <aside class="side" id="side" aria-label="أقسام لوحة التحكم">
+    <a class="brand" href="#/overview"><img src="/assets/logo.png" alt=""><span>لوحة التحكم<small>الثانوية العسكرية بنين</small></span></a>
+    <nav id="nav" aria-label="الأقسام"></nav>
+    <div class="side-foot">
+      <a class="side-link" href="/" target="_blank" rel="noopener"><span id="ic-site"></span><span>عرض الموقع</span></a>
+      <button class="side-link" id="open-settings" type="button"><span id="ic-set"></span><span>الإعدادات وإمكانية الوصول</span></button>
+      <div class="who"><span id="who" dir="ltr"></span><button id="logout" type="button" class="btn ghost sm">خروج</button></div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="col">
+    <div class="topbar"><button id="menu" class="btn ghost" type="button" aria-expanded="false" aria-controls="side" aria-label="فتح القائمة">☰</button><span class="crumb" id="crumb"></span></div>
+    <main id="main" tabindex="-1"></main>
   </div>
-</main>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<dialog id="dlg-confirm" aria-labelledby="dc-t">
+  <form method="dialog"><h2 id="dc-t"></h2><p id="dc-m" class="muted"></p>
+    <div class="row"><button class="btn danger" value="ok" id="dc-ok">تأكيد</button><button class="btn" value="cancel" autofocus>إلغاء</button></div></form>
+</dialog>
+
+<dialog id="dlg-settings" aria-labelledby="ds-t">
+  <form method="dialog" id="settings-form"><h2 id="ds-t">الإعدادات وإمكانية الوصول</h2>
+    <fieldset><legend>حجم النص</legend>
+      <label class="opt"><input type="radio" name="text" value="sm"> صغير</label>
+      <label class="opt"><input type="radio" name="text" value="md"> عادي</label>
+      <label class="opt"><input type="radio" name="text" value="lg"> كبير</label></fieldset>
+    <label class="opt"><input type="checkbox" name="contrast"> تباين عالٍ (حدود ونصوص أوضح)</label>
+    <label class="opt"><input type="checkbox" name="compact"> عرض مضغوط (مسافات أقل)</label>
+    <label class="opt"><input type="checkbox" name="calm"> تقليل الحركة</label>
+    <p class="muted sm">اختصارات المحرر: <kbd>Ctrl</kbd>+<kbd>S</kbd> حفظ كمسودة، <kbd>Ctrl</kbd>+<kbd>Enter</kbd> نشر.</p>
+    <div class="row"><button class="btn primary" value="close">تم</button></div></form>
+</dialog>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script>
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const say = (id, t, ok) => { $(id).textContent = t; $(id).className = 'msg' + (ok ? ' ok' : ''); };
-
-auth.onAuthStateChanged(u => {
-  $('login').classList.toggle('hidden', !!u);
-  $('app').classList.toggle('hidden', !u);
-  $('logout').classList.toggle('hidden', !u);
-  if (u) loadItems();
-});
-
-$('loginBtn').onclick = async () => {
-  try { await auth.signInWithEmailAndPassword($('email').value.trim(), $('pass').value); }
-  catch { say('loginMsg', 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'); }
-};
-$('logout').onclick = () => auth.signOut();
-
-$('saveBtn').onclick = async () => {
-  const title = $('title').value.trim();
-  if (!title) return say('saveMsg', 'اكتب العنوان أولًا.');
-  try {
-    const doc = {title, summary: $('summary').value.trim(), details: $('details').value.trim(),
-      image: $('image').value.trim(), date: firebase.firestore.FieldValue.serverTimestamp()};
-    if ($('col').value === 'achievements') doc.activity = $('act').value;
-    await db.collection($('col').value).add(doc);
-    ['title','summary','details','image'].forEach(i => $(i).value = '');
-    say('saveMsg', 'تم النشر.', true); loadItems();
-  } catch (e) { console.error(e); say('saveMsg', 'تعذر النشر. تأكد أن حسابك مسموح له بالكتابة في قواعد Firestore.'); }
-};
-
-async function loadItems() {
-  const col = $('col').value;
-  try {
-    const snap = await db.collection(col).orderBy('date', 'desc').get();
-    $('items').innerHTML = snap.empty ? '<p>لا يوجد محتوى في هذا القسم بعد.</p>' :
-      snap.docs.map(d => `<div class="item"><div><strong>${esc(d.data().title)}</strong><br><small>${esc(d.data().summary)}</small></div>
-      <button class="btn line" style="color:#a02020;border-color:#a02020;background:none" data-id="${d.id}">حذف</button></div>`).join('');
-  } catch (e) { console.error(e); $('items').innerHTML = '<p>تعذر تحميل المحتوى.</p>'; }
-}
-$('col').onchange = () => { $('actWrap').classList.toggle('hidden', $('col').value !== 'achievements'); loadItems(); };
-$('items').onclick = async e => {
-  const id = e.target.dataset.id;
-  if (id && confirm('حذف هذا العنصر نهائيًا؟')) { await db.collection($('col').value).doc(id).delete(); loadItems(); }
-};
-</script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/admin.js?v=1"></script>
 </body>
 </html>
