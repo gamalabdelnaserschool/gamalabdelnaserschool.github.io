@@ -16,11 +16,10 @@
 
 /* header */
 header{background:rgba(10,26,77,.94);backdrop-filter:blur(10px);transition:box-shadow .3s}
-header .wrap{transition:padding .3s var(--ease)}
-.brand img{transition:width .3s var(--ease),height .3s var(--ease)}
+.brand img{transition:transform .3s var(--ease)}
 header.scrolled{box-shadow:0 8px 24px rgba(5,12,40,.4)}
-header.scrolled .wrap{padding-block:.1rem}
-header.scrolled .brand img{width:38px;height:38px}
+/* header height must never change on scroll (it would shift the page and re-trigger the scroll event) */
+header.scrolled .brand img{transform:scale(.84)}
 nav a{position:relative;border-bottom:0!important}
 nav a::after{content:"";position:absolute;inset-inline:0;bottom:-3px;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:right;transition:transform .35s var(--ease)}
 nav a:hover::after,nav a[aria-current]::after{transform:scaleX(1)}
