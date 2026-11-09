@@ -79,12 +79,13 @@ async function loadLatestNews() {
   const box = document.getElementById('news-list');
   if (!box) return;
   try {
-    const snap = await db.collection('news').orderBy('date', 'desc').limit(3).get();
-    if (snap.empty) { renderNews(sampleNews, true); return; }
-    const items = snap.docs.map(d => {
+    const snap = await db.collection('news').orderBy('date', 'desc').limit(12).get();
+    const docs = snap.docs.filter(d => d.data().status !== 'draft').slice(0, 3);
+    if (!docs.length) { renderNews(sampleNews, true); return; }
+    const items = docs.map(d => {
       const n = d.data();
       const dateLabel = n.date?.toDate ? n.date.toDate().toLocaleDateString('ar-EG', {day:'numeric', month:'long', year:'numeric'}) : '';
-      return {...n, dateLabel, category:'أخبار المدرسة'};
+      return {...n, dateLabel, category: n.category || 'أخبار المدرسة'};
     });
     renderNews(items, false);
   } catch (err) {

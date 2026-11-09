@@ -26,6 +26,7 @@ async function getActivities() {
   try {
     const snap = await db.collection('activities').orderBy('date', 'desc').get();
     snap.docs.forEach(d => {
+      if (d.data().status === 'draft') return;
       const x = Object.fromEntries(Object.entries({id: d.id, ...d.data()}).filter(([, v]) => v));
       const i = list.findIndex(a => a.title === x.title);
       if (i >= 0) list[i] = {...list[i], ...x}; else list.push(x);

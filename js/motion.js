@@ -2,7 +2,10 @@
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hdr = document.querySelector('header');
-  const onScroll = () => hdr && hdr.classList.toggle('scrolled', scrollY > 30);
+  let scrolled = false;
+  const onScroll = () => { if (!hdr) return; const y = scrollY;
+    if (!scrolled && y > 60) scrolled = true; else if (scrolled && y < 10) scrolled = false;
+    hdr.classList.toggle('scrolled', scrolled); };
   addEventListener('scroll', onScroll, {passive: true}); onScroll();
 
   document.querySelectorAll('.ticker .track').forEach(t =>

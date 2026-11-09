@@ -21,10 +21,10 @@ async function getAchievements() {
   try {
     const snap = await db.collection('achievements').orderBy('date', 'desc').get();
     snap.docs.forEach(d => {
-      const x = d.data(); if (!x.activity) return;
+      const x = d.data(); if (!x.activity || x.status === 'draft') return;
       const t = String(x.title || '');
       const [h, ...rest] = t.split('—');
-      list.push({activity: x.activity, rank: rankOf(h), name: rest.length ? rest.join('—').trim() : t, level:'', text: x.summary || x.details || '', image: x.image || ''});
+      list.push({activity: x.activity, rank: x.rank ?? rankOf(h), name: x.name || (rest.length ? rest.join('—').trim() : t), level: x.level || '', text: x.text || x.summary || x.details || '', image: x.image || ''});
     });
   } catch (e) { console.warn('Using default achievements only:', e.message); }
   return list;
