@@ -49,3 +49,12 @@
   scan(document.body);
   new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(scan))).observe(document.body, {childList: true, subtree: true});
 })();
+
+// Card spotlight: feeds the pointer position to the glow on cards
+document.addEventListener('pointermove', e => {
+  const c = e.target.closest && e.target.closest('.card,.act-card,.ach,.facts div,.about-section .links a');
+  if (!c) return;
+  const r = c.getBoundingClientRect();
+  c.style.setProperty('--px', (e.clientX - r.left) + 'px');
+  c.style.setProperty('--py', (e.clientY - r.top) + 'px');
+}, {passive: true});
