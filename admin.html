@@ -22,6 +22,7 @@
     <div class="field"><label for="email">البريد الإلكتروني</label><input id="email" type="email" dir="ltr" autocomplete="username" required></div>
     <div class="field"><label for="pass">كلمة المرور</label>
       <div class="pw"><input id="pass" type="password" dir="ltr" autocomplete="current-password" required><button type="button" id="pw-toggle" class="btn ghost" aria-pressed="false">إظهار</button></div></div>
+    <div class="field"><label for="person">اسمك</label><input id="person" type="text" autocomplete="name" required aria-describedby="person-h"><small class="hint" id="person-h">يستخدم أكثر من شخص نفس الحساب، فيظهر اسمك في سجل الدخول عند المالك.</small></div>
     <p id="login-msg" class="msg" role="alert"></p>
     <div class="row"><button class="btn primary" type="submit">دخول</button><button type="button" id="reset" class="btn ghost">نسيت كلمة المرور؟</button></div>
   </form>
@@ -62,6 +63,12 @@
     <label class="opt"><input type="checkbox" name="calm"> تقليل الحركة</label>
     <p class="muted sm">اختصارات المحرر: <kbd>Ctrl</kbd>+<kbd>S</kbd> حفظ كمسودة، <kbd>Ctrl</kbd>+<kbd>Enter</kbd> نشر.</p>
     <div class="row"><button class="btn primary" value="close">تم</button></div></form>
+</dialog>
+
+<dialog id="dlg-person" aria-labelledby="dp-t">
+  <form id="person-form"><h2 id="dp-t">ما اسمك؟</h2><p class="muted">الحساب يستخدمه أكثر من شخص. اكتب اسمك ليظهر في سجل الدخول.</p>
+    <div class="field"><label for="person-name">الاسم</label><input id="person-name" type="text" autocomplete="name" required></div>
+    <div class="row"><button class="btn primary" type="submit">متابعة</button></div></form>
 </dialog>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
