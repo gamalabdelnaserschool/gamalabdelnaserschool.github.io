@@ -25,11 +25,11 @@ async function getActivities() {
   const list = DEFAULT_ACTIVITIES.map(a => ({...a}));
   try {
     const snap = await db.collection('activities').orderBy('date', 'desc').get();
-    snap.docs.forEach(d => {
+    [...snap.docs].reverse().forEach(d => {
       if (d.data().status === 'draft') return;
       const x = Object.fromEntries(Object.entries({id: d.id, ...d.data()}).filter(([, v]) => v));
-      const i = list.findIndex(a => a.title === x.title);
-      if (i >= 0) list[i] = {...list[i], ...x}; else list.push(x);
+      const i = list.findIndex(a => a.id === x.activity || a.title === x.title);
+      if (i >= 0) list[i] = {...list[i], ...x, id: list[i].id}; else list.push(x);
     });
   } catch (e) { console.warn('Using default activities only:', e.message); }
   return list;
