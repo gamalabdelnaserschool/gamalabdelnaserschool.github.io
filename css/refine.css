@@ -6,14 +6,12 @@
 .page-hero::before{content:"";position:absolute;inset:0;background:var(--tile-gold);background-size:96px;-webkit-mask-image:linear-gradient(90deg,#000 0%,transparent 68%);mask-image:linear-gradient(90deg,#000 0%,transparent 68%)}
 .page-hero::after{width:330px;height:330px;top:50%;translate:0 -50%;inset-inline-end:-70px;border:0;border-radius:0;box-shadow:none;background:var(--laurel) center/contain no-repeat;opacity:.6}
 .page-hero .wrap{position:relative;z-index:1}
-.hero::after{background-image:var(--tile-gold);background-size:96px;opacity:.6}
-.band{background-image:var(--tile-gold);background-size:96px}
-.site-footer{background-image:var(--tile-gold);background-size:96px}
-.about-section::before{inset:0;inset-inline-start:0;top:0;width:auto;height:auto;border:0;border-radius:0;background:var(--tile-navy);background-size:96px;-webkit-mask-image:radial-gradient(ellipse at 12% 15%,#000,transparent 62%);mask-image:radial-gradient(ellipse at 12% 15%,#000,transparent 62%)}
-.about-section::after{display:none}
+.hero::after{display:none}
+.band{background-image:none}
+.site-footer{background-image:none}
+.about-section::before,.about-section::after,.news-section::before{display:none}
 .about-section .about>div:first-child{background-image:var(--tile-gold),linear-gradient(145deg,#172d70 0%,#0a1a4d 75%);background-size:96px,auto}
 .about-section .about>div:first-child::after{width:260px;height:260px;inset-inline-end:-95px;bottom:-110px;border:0;border-radius:0;box-shadow:none;background:var(--laurel) center/contain no-repeat;opacity:.4}
-.news-section::before{opacity:.35;background-image:var(--tile-navy);background-size:96px;-webkit-mask-image:linear-gradient(110deg,#000,transparent 75%);mask-image:linear-gradient(110deg,#000,transparent 75%)}
 
 /* ===== Cards: floating glass, spotlight that follows the pointer, gradient edge ===== */
 :is(.card,.act-card,.ach,.facts div,.about-section .links a){position:relative;isolation:isolate;border:1px solid rgba(29,63,174,.12);border-radius:20px;background:linear-gradient(160deg,#fff,#f3f6ff);box-shadow:0 1px 0 #fff inset,0 14px 26px -20px rgba(10,26,77,.38)}
@@ -54,3 +52,11 @@
 .facility-list li{display:flex;align-items:center;gap:.7rem;border:1px solid rgba(29,63,174,.12);border-radius:14px;background:#fff;padding:.75rem 1rem}
 .facility-list li::before{content:"";flex:none;width:10px;height:10px;rotate:45deg;background:linear-gradient(135deg,var(--gold),var(--gold-2))}
 @media(max-width:560px){.about-section .links a{min-height:100px}}
+
+/* footer credit card */
+.copy{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;text-align:start}
+.credit{display:inline-flex;align-items:center;gap:.55rem;padding:.4rem 1rem;border:1px solid rgba(230,199,90,.45);border-radius:12px;background:rgba(255,255,255,.05);font-size:.88rem;color:#cfd9ff}
+.credit svg{width:18px;height:18px;color:var(--gold-2)}
+.credit a{color:var(--gold-2);font-weight:700;background:linear-gradient(var(--gold-2),var(--gold-2)) 0 100%/0 2px no-repeat;transition:background-size .3s}
+.credit a:hover{background-size:100% 2px}
+@media(max-width:560px){.copy{justify-content:center;text-align:center}}
