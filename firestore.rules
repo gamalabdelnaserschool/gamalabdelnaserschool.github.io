@@ -1,11 +1,62 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // القراءة مفتوحة للزوار، والكتابة لحساب الإدارة فقط
-    // غيّر البريد التالي إلى بريد حساب الإدارة الذي أنشأته في Authentication
-    match /{col}/{doc} {
+
+    // ===== helpers =====
+    function signedIn() { return request.auth != null; }
+    function staffRef() { return /databases/$(database)/documents/staff/$(request.auth.uid); }
+    function isStaff() { return signedIn() && exists(staffRef()) && get(staffRef()).data.active == true; }
+    function role() { return get(staffRef()).data.role; }
+    function isOwner() { return isStaff() && role() == 'owner'; }
+    function fullAccess() { return isStaff() && (role() == 'owner' || role() == 'head_admin'); }
+    function isActAdmin() { return isStaff() && role() == 'admin' && get(staffRef()).data.activity is string && get(staffRef()).data.activity != ''; }
+    function myAct() { return get(staffRef()).data.activity; }
+    function adminCreate() { return isActAdmin() && request.resource.data.activity == myAct(); }
+    function adminUpdate() { return isActAdmin() && resource.data.activity == myAct() && request.resource.data.activity == myAct(); }
+    function adminDelete() { return isActAdmin() && resource.data.activity == myAct(); }
+
+    // ===== public content: read by everyone =====
+    match /news/{id} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.email == "opaidamazed@gmail.com";
+      allow write: if fullAccess();
+    }
+    match /activities/{id} {
+      allow read: if true;
+      allow create: if fullAccess() || adminCreate();
+      allow update: if fullAccess() || adminUpdate();
+      allow delete: if fullAccess() || adminDelete();
+    }
+    match /achievements/{id} {
+      allow read: if true;
+      allow create: if fullAccess() || adminCreate();
+      allow update: if fullAccess() || adminUpdate();
+      allow delete: if fullAccess() || adminDelete();
+    }
+    match /competitions/{id} {
+      allow read: if true;
+      allow create: if fullAccess() || adminCreate();
+      allow update: if fullAccess() || adminUpdate();
+      allow delete: if fullAccess() || adminDelete();
+    }
+
+    // ===== team accounts: owner only =====
+    match /staff/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isOwner());
+      allow create: if isOwner() || (request.auth.uid == uid
+                      && request.auth.token.email == 'opaidamazed@gmail.com'
+                      && request.resource.data.role == 'owner'
+                      && request.resource.data.active == true);
+      allow update, delete: if isOwner();
+    }
+
+    // ===== login / logout log and live sessions =====
+    match /logs/{id} {
+      allow create: if isStaff() && request.resource.data.uid == request.auth.uid;
+      allow read, delete: if isOwner();
+    }
+    match /sessions/{sid} {
+      allow create, update: if isStaff() && request.resource.data.uid == request.auth.uid;
+      allow read, delete: if isOwner();
     }
   }
 }
