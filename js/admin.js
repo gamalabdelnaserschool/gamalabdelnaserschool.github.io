@@ -162,7 +162,7 @@ $('#logout').onclick = doLogout;
 function renderNav() {
   const items = [['overview', 'نظرة عامة', IC.home], ...KEYS.filter(k => can('read', k)).map(k => [k, SECTIONS[k].label, SECTIONS[k].icon])];
   if (can('read', 'team')) items.push(['team', 'الفريق والصلاحيات', IC.users], ['security', 'الأمان والنشاط', IC.shield]);
-  $('#nav').innerHTML = items.map(([k, l, i]) => `<a href="#/${k}" data-nav="${k}">${ico(i, 20)}<span>${l}</span>${k === 'security' ? '<span class="nbadge" id="nbadge" hidden>0</span>' : ''}</a>`).join('');
+  $('#nav').innerHTML = items.map(([k, l, i]) => `<a href="${k === 'team' ? '/admin/team' : '#/' + k}" data-nav="${k}">${ico(i, 20)}<span>${l}</span>${k === 'security' ? '<span class="nbadge" id="nbadge" hidden>0</span>' : ''}</a>`).join('');
   updateBadge();
 }
 const setMenu = open => { $('#app').classList.toggle('nav-open', open); $('#menu').setAttribute('aria-expanded', open); };
@@ -176,6 +176,16 @@ $('#settings-form').addEventListener('change', () => { const f = $('#settings-fo
 
 /* ---- routing (hash based, warns about unsaved changes) ---- */
 let lastHash = location.hash, reverting = false;
+addEventListener('popstate', () => route());
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href="/admin/team"]');
+  if (!a) return;
+  e.preventDefault();
+  if (state.dirty && !confirm('لديك تغييرات غير محفوظة. هل تريد المغادرة؟')) return;
+  state.dirty = false;
+  history.pushState({adminRoute:'team'}, '', '/admin/team');
+  route();
+});
 addEventListener('hashchange', () => {
   if (reverting) { reverting = false; return; }
   if (state.dirty && !confirm('لديك تغييرات غير محفوظة. هل تريد المغادرة؟')) { reverting = true; location.hash = lastHash; return; }
@@ -194,6 +204,67 @@ async function route() {
   else if (mode === 'edit') await viewEdit(sec, id);
   else viewList(sec);
   focusH1(); scrollTo(0, 0);
+}
+
+
+/* ---- owner team management ---- */
+async function viewTeam() {
+  setTitle('الفريق والصلاحيات');
+  mainEl().innerHTML = '<div class="page-head"><div><h1 id="h1" tabindex="-1">الفريق والصلاحيات</h1><p class="muted">إدارة حسابات فريق الموقع وتحديد دور كل عضو.</p></div></div><p class="muted" role="status">جارٍ تحميل أعضاء الفريق…</p>';
+  try {
+    const snap = await db.collection('staff').get();
+    const members = snap.docs.map(d => ({uid:d.id, ...d.data()})).sort((a,b) => (a.role === 'owner' ? -1 : b.role === 'owner' ? 1 : String(a.email || '').localeCompare(String(b.email || ''))));
+    const roleText = r => ROLE_LABEL[r] || r || 'غير محدد';
+    mainEl().innerHTML =
+      '<div class="page-head"><div><h1 id="h1" tabindex="-1">الفريق والصلاحيات</h1><p class="muted">أنت مسجل حاليًا بصفتك المالك. يمكنك تجهيز صلاحيات الأعضاء من هنا.</p></div></div>' +
+      '<section class="panel team-help"><h2>إضافة عضو جديد</h2><p class="muted">أولًا أنشئ حسابًا للعضو في Firebase Authentication باستخدام بريده وكلمة مروره، ثم انسخ User UID وأكمل البيانات هنا. لن يتم إنشاء كلمة مرور أو إرسالها من هذه الصفحة.</p>' +
+      '<form id="team-add-form" class="team-form">' +
+      '<div class="field"><label for="team-uid">User UID من Firebase Authentication</label><input id="team-uid" required dir="ltr" autocomplete="off" placeholder="Firebase Authentication UID"></div>' +
+      '<div class="field"><label for="team-email">البريد الإلكتروني</label><input id="team-email" type="email" required dir="ltr" placeholder="name@example.com"></div>' +
+      '<div class="field"><label for="team-label">اسم العضو</label><input id="team-label" required placeholder="الاسم الظاهر في لوحة التحكم"></div>' +
+      '<div class="field"><label for="team-role">الصلاحية</label><select id="team-role"><option value="admin">مشرف نشاط</option><option value="head_admin">رئيس الإدارة</option></select></div>' +
+      '<div class="field" id="team-activity-wrap"><label for="team-activity">النشاط</label><select id="team-activity">' + ACTS.map(a => '<option value="' + esc(a[0]) + '">' + esc(a[1]) + '</option>').join('') + '</select><small class="hint">يُطلب للمشرف فقط، ورئيس الإدارة لديه صلاحية جميع الأنشطة.</small></div>' +
+      '<div class="row"><button class="btn primary" type="submit">إضافة إلى الفريق</button></div></form></section>' +
+      '<h2 class="sec">أعضاء الفريق (' + members.length + ')</h2><div class="team-list">' +
+      (members.length ? members.map(m => '<article class="row-i team-member"><div class="row-main"><span class="badge ' + (m.active === false ? 'draft' : 'pub') + '">' + (m.active === false ? 'معطّل' : 'نشط') + '</span><div><strong class="row-title">' + esc(m.label || (m.role === 'owner' ? 'المالك' : 'عضو الفريق')) + '</strong><div class="meta">' + esc(m.email || '') + ' · ' + esc(roleText(m.role)) + (m.role === 'admin' ? ' · ' + esc(actName(m.activity)) : '') + '</div><small class="meta team-uid" dir="ltr">' + esc(m.uid) + '</small></div></div>' +
+      (m.role === 'owner' ? '<span class="badge pub">المالك الأساسي</span>' : '<div class="row-actions"><button class="btn ghost sm" data-team-toggle="' + esc(m.uid) + '" data-active="' + (m.active === false ? 'false' : 'true') + '">' + (m.active === false ? 'تفعيل' : 'تعطيل') + '</button><button class="btn ghost sm danger" data-team-delete="' + esc(m.uid) + '">حذف الصلاحية</button></div>') +
+      '</article>').join('') : '<div class="empty">لا يوجد أعضاء مسجلون حتى الآن.</div>') + '</div>';
+    $('#team-role').onchange = () => { $('#team-activity-wrap').hidden = $('#team-role').value !== 'admin'; };
+    $('#team-role').dispatchEvent(new Event('change'));
+    $('#team-add-form').onsubmit = async e => {
+      e.preventDefault();
+      const uid = $('#team-uid').value.trim(), email = $('#team-email').value.trim(), label = $('#team-label').value.trim(), role = $('#team-role').value, activity = $('#team-activity').value;
+      if (!uid || !email || !label || (role === 'admin' && !activity)) return;
+      if (uid === state.user.uid) { toast('لا يمكن تغيير حساب المالك من هذه الصفحة.', 'bad'); return; }
+      const btn = $('#team-add-form button[type=submit]'); btn.disabled = true;
+      try {
+        const ref = db.collection('staff').doc(uid), old = await ref.get();
+        if (old.exists) { toast('هذا الحساب موجود بالفعل في الفريق.', 'bad'); btn.disabled = false; return; }
+        const record = {uid, email, label, role, active:true, createdAt:nowTs()};
+        if (role === 'admin') record.activity = activity;
+        await ref.set(record);
+        toast('تمت إضافة العضو بنجاح. أصبح بإمكانه تسجيل الدخول بالحساب الذي أنشأته له.');
+        await viewTeam();
+      } catch (err) { console.error(err); toast('تعذرت إضافة العضو. تحقق من UID وقواعد Firestore.', 'bad'); btn.disabled = false; }
+    };
+    $('.team-list').onclick = async e => {
+      const toggle = e.target.closest('[data-team-toggle]'), del = e.target.closest('[data-team-delete]');
+      const uid = (toggle || del)?.dataset.teamToggle || (del && del.dataset.teamDelete);
+      if (!uid) return;
+      if (toggle) {
+        const active = toggle.dataset.active !== 'false';
+        if (!await askConfirm(active ? 'تعطيل الحساب' : 'تفعيل الحساب', active ? 'لن يتمكن هذا العضو من دخول لوحة التحكم بعد التعطيل.' : 'سيتمكن العضو من دخول لوحة التحكم مجددًا.', active ? 'تعطيل' : 'تفعيل')) return;
+        try { await db.collection('staff').doc(uid).update({active:!active}); toast(active ? 'تم تعطيل العضو.' : 'تم تفعيل العضو.'); await viewTeam(); }
+        catch (err) { console.error(err); toast('تعذر تحديث العضو.', 'bad'); }
+      } else if (del && await askConfirm('حذف صلاحية العضو', 'سيتم حذف سجل الصلاحيات فقط، ولن يتم حذف حسابه من Firebase Authentication.', 'حذف الصلاحية')) {
+        try { await db.collection('staff').doc(uid).delete(); toast('تم حذف سجل الصلاحيات.'); await viewTeam(); }
+        catch (err) { console.error(err); toast('تعذر حذف الصلاحية.', 'bad'); }
+      }
+    };
+  } catch (err) {
+    console.error(err);
+    mainEl().innerHTML = '<div class="page-head"><h1 id="h1" tabindex="-1">الفريق والصلاحيات</h1></div><div class="empty" role="alert"><p>تعذر تحميل أعضاء الفريق. تأكد من اتصال الإنترنت وقواعد Firestore.</p></div>';
+  }
 }
 
 /* ---- overview ---- */
