@@ -194,7 +194,10 @@ addEventListener('hashchange', () => {
 addEventListener('beforeunload', e => { if (state.dirty) { e.preventDefault(); e.returnValue = ''; } });
 async function route() {
   if (!state.user) return;
-  const [sec = 'overview', mode, id] = (location.hash.replace(/^#\/?/, '') || 'overview').split('/');
+  const cleanPath = location.pathname.replace(/\/+$/, '');
+  const cleanMatch = cleanPath.match(/^\/admin\/(team|security)$/);
+  const routeValue = cleanMatch ? cleanMatch[1] : (location.hash.replace(/^#\/?/, '') || 'overview');
+  const [sec = 'overview', mode, id] = routeValue.split('/');
   $$('#nav a').forEach(a => a.dataset.nav === sec ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
   setMenu(false);
   if (sec === 'team' || sec === 'security') { if (!can('read', sec)) viewDenied(); else if (sec === 'team') await viewTeam(); else await viewSecurity(); }
